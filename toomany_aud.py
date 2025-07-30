@@ -16,6 +16,9 @@ wallet = {
 
 def calculate_total():
     global total_balance
+    if any(count.value is None for count in wallet.values()):
+        total_label.set_text("")
+        return
     total_balance = sum(int(count.value) * coin for coin, count in wallet.items()) / 100
     total_label.set_text(f"Total Balance: ${total_balance:.2f}")
     return
@@ -28,6 +31,11 @@ def reset_inputs():
     rounding_label.set_text("")
     result_label.set_text("")
     return
+
+def validate_number_input(value):
+    if value is None:
+        return 'Value is required'
+    return None
 
 def process_action():
     coin_list = []
@@ -68,6 +76,10 @@ def process_action():
             return max(results, key=len)
         return
     
+    if target_value.value is None or target_value.value < 0:
+        result_label.set_text("Please enter a valid target value")
+        return
+    
     if total_balance >= target_value.value and total_balance != 0:
         rounding_label.set_text("")
         target = roundup(target_value.value * 100)
@@ -92,7 +104,7 @@ with ui.card():
             wallet[coin] = number_input
 
     total_label = ui.label('Total Balance: $0.00').classes('text-lg mt-4')
-    target_value = ui.number(label='Target cost: $', precision=2)#.classes('mt-4 w-full')
+    target_value = ui.number(label='Target cost: $', precision=2, min=0, value=0, validation=validate_number_input)
     
     with ui.row():
         ui.button('Calculate', on_click=process_action)
