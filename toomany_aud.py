@@ -20,6 +20,15 @@ def calculate_total():
     total_label.set_text(f"Total Balance: ${total_balance:.2f}")
     return
 
+def reset_inputs():
+    for count in wallet.values():
+        count.set_value(0)
+    total_label.set_text("Total Balance: $0.00")
+    target_value.set_value(0)
+    rounding_label.set_text("")
+    result_label.set_text("")
+    return
+
 def process_action():
     coin_list = []
 
@@ -82,10 +91,14 @@ with ui.card():
             number_input = ui.number(label=label, value=0, min=0, on_change=calculate_total).classes('w-20')
             wallet[coin] = number_input
 
-    total_label = ui.label('').classes('text-lg mt-4')
-    target_value = ui.number(label='Target cost: $', precision=2).classes('mt-4 w-full')
-    ui.button('Calculate', on_click=process_action).classes('mt-4 w-full')
+    total_label = ui.label('Total Balance: $0.00').classes('text-lg mt-4')
+    target_value = ui.number(label='Target cost: $', precision=2)#.classes('mt-4 w-full')
+    
+    with ui.row():
+        ui.button('Calculate', on_click=process_action)
+        ui.button('Reset', on_click=reset_inputs)
+    
     rounding_label = ui.label('')
-    result_label = ui.label('').classes('text-lg mt-4')
+    result_label = ui.label('').classes('text-lg')
 
 ui.run()
