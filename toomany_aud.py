@@ -1,4 +1,5 @@
 from nicegui import ui
+from collections import Counter
 
 # Coin calculator AUD - NiceGUI
 
@@ -93,7 +94,9 @@ def process_action():
         result = find_combinations(coin_list, rounded_target)
 
         if result:
-            result_label.set_text(f"Result: {result}")
+            counts = Counter(result)
+            counted_result = [f"🪙{coin}c x{count}" if coin < 100 else f"🪙${str(round(coin * 0.01))} x{count}" for coin, count in counts.items()]
+            result_label.set_text(f"Result: {', '.join(counted_result)}")
         else:
             result_label.set_text("No combinations found within limit")
     else:
