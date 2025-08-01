@@ -14,13 +14,43 @@ wallet = {
     200: 0
 }
 
-def calculate_total():
-    global total_balance
-    if any(count.value is None for count in wallet.values()):
-        total_label.set_text("")
-        return
-    total_balance = sum(int(count.value) * coin for coin, count in wallet.items()) / 100
-    total_label.set_text(f"Total Balance: ${total_balance:.2f}")
+def roundup(target):
+    coin_counts = [int(wallet[c].value or 0) for c in wallet]
+    coins = list(wallet.keys())
+    check = [coins[i] for i, n in enumerate(coin_counts) if n > 0]
+
+    if not check:
+        return target
+
+    # Exact
+    if any(target % c == 0 for c in check):
+        return target
+    
+    remain = target % min(check)
+    rounded = target + (min(check) - remain)
+    rounding_label.set_text(f"Rounded up value: {rounded / 100:.2f}")
+    return rounded
+
+def find_combinations(nums, target):
+    results = []
+    current_combination = []
+
+    def backtrack(start, target):
+        if target == 0 and len(list(current_combination)) <= coin_limit:
+            results.append(list(current_combination))
+            return
+        
+        for i in range(start, len(nums)):
+            if i > start and nums[i] == nums[i-1]:
+                continue  # skip duplicates to avoid redundant combinations
+            current_combination.append(nums[i])
+            backtrack(i + 1, target - nums[i])
+            current_combination.pop()
+
+    nums.sort()  # Sort the list to handle duplicates and for early pruning
+    backtrack(0, target)
+    if results:
+        return max(results, key=len)
     return
 
 def reset_inputs():
@@ -32,60 +62,36 @@ def reset_inputs():
     result_label.set_text("")
     return
 
+def calculate_total():
+    global total_balance
+    if any(count.value is None for count in wallet.values()):
+        total_label.set_text("")
+        return
+    total_balance = sum(int(count.value or 0) * coin for coin, count in wallet.items()) / 100
+    total_label.set_text(f"Total Balance: ${total_balance:.2f}")
+    return
+
 def validate_number_input(value):
     if value is None:
         return 'Value is required'
     return None
 
 def process_action():
-    coin_list = []
-
-    def roundup(target_cents):
-        exact = True
-        check = [coin for coin, count in wallet.items() if int(count.value) > 0]
-        exact = any(target_cents % c == 0 for c in check)
-        if exact == False:
-            remain = target_cents % min(check)
-            target_cents = target_cents + (min(check) - remain)
-            target_dollars = target_cents / 100
-            rounding_label.set_text(f"Rounded up value: {target_dollars:.2f}")
-        else:
-            target_dollars = target_cents / 100
-        return target_dollars
-    
-    def find_combinations(nums, target):
-        results = []
-        current_combination = []
-
-        def backtrack(start, target):
-            if target == 0:
-                if len(list(current_combination)) <= coin_limit:
-                    results.append(list(current_combination))
-                return
-            
-            for i in range(start, len(nums)):
-                if i > start and nums[i] == nums[i-1]:
-                    continue  # skip duplicates to avoid redundant combinations
-                current_combination.append(nums[i])
-                backtrack(i + 1, target - nums[i])
-                current_combination.pop()
-
-        nums.sort()  # Sort the list to handle duplicates and for early pruning
-        backtrack(0, target)
-        if results:
-            return max(results, key=len)
-        return
-    
-    if target_value.value is None or target_value.value < 0:
+    if target_value.value is None or target_value.value <= 0:
         result_label.set_text("Please enter a valid target value")
         return
-    
-    if total_balance >= target_value.value and total_balance != 0:
-        rounding_label.set_text("")
-        target = roundup(target_value.value * 100)
+
+    holdings = total_balance * 100
+    target_cents = int(target_value.value * 100)
+
+    if holdings >= target_cents and holdings != 0:
+        coin_list = []
         for coin, count in wallet.items():
-            coin_list.extend([coin] * int(count.value))
-        result = find_combinations(coin_list, target * 100)
+            coin_list.extend([coin] * int(count.value or 0))
+
+        rounded_target = roundup(target_cents)
+        result = find_combinations(coin_list, rounded_target)
+
         if result:
             result_label.set_text(f"Result: {result}")
         else:
@@ -93,7 +99,6 @@ def process_action():
     else:
         rounding_label.set_text("")
         result_label.set_text("Insufficient balance")
-    return
 
 with ui.card():
     ui.label('Too Many Coins').classes('text-2xl font-bold mb-4')
