@@ -56,30 +56,25 @@ def find_combinations(nums, target):
 
 def reset_inputs():
     for count in wallet.values():
-        count.set_value(0)
+        count.set_value(None)
     total_label.set_text("Total Balance: $0.00")
-    target_value.set_value(0)
     rounding_label.set_text("")
     result_label.set_text("")
+    target_value.value = None
+    if 'error' in target_value._props:
+        target_value.props(remove='error error-message')
     return
 
 def calculate_total():
     global total_balance
-    if any(count.value is None for count in wallet.values()):
-        total_label.set_text("")
-        return
     total_balance = sum(int(count.value or 0) * coin for coin, count in wallet.items()) / 100
     total_label.set_text(f"Total Balance: ${total_balance:.2f}")
     return
 
-def validate_number_input(value):
-    if value is None:
-        return 'Value is required'
-    return None
-
 def process_action():
+    rounding_label.set_text("")
     if target_value.value is None or target_value.value <= 0:
-        result_label.set_text("Please enter a valid target value")
+        target_value.props('error error-message="Please enter a valid amount"')
         return
 
     holdings = total_balance * 100
@@ -100,19 +95,19 @@ def process_action():
         else:
             result_label.set_text("No combinations found within limit")
     else:
-        rounding_label.set_text("")
         result_label.set_text("Insufficient balance")
 
-with ui.card():
+# UI
+with ui.card().classes('rounded-2xl shadow-xl'):
     ui.label('Too Many Coins').classes('text-2xl font-bold mb-4')
     with ui.row():
         for coin in wallet.keys():
             label = f"{coin}c" if coin < 100 else f"${round(coin * 0.01)}"
-            number_input = ui.number(label=label, value=0, min=0, on_change=calculate_total).classes('w-20')
+            number_input = ui.number(label=label, min=0, on_change=calculate_total).classes('w-20')
             wallet[coin] = number_input
 
     total_label = ui.label('Total Balance: $0.00').classes('text-lg mt-4')
-    target_value = ui.number(label='Target cost: $', precision=2, min=0, value=0, validation=validate_number_input)
+    target_value = ui.number(label='Target cost: $', precision=2, min=0)
     
     with ui.row():
         ui.button('Calculate', on_click=process_action)
@@ -121,4 +116,7 @@ with ui.card():
     rounding_label = ui.label('')
     result_label = ui.label('').classes('text-lg')
 
-ui.run()
+# Page setup
+ui.page_title('Too Many Coins')
+ui.query('body').classes('bg-gray-500')
+ui.run(favicon='💰')
