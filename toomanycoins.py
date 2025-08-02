@@ -90,8 +90,8 @@ def process_action():
 
         if result:
             counts = Counter(result)
-            counted_result = [f"🪙{coin}c x{count}" if coin < 100 else f"🪙${str(round(coin * 0.01))} x{count}" for coin, count in counts.items()]
-            result_label.set_text(f"Result: {', '.join(counted_result)}")
+            counted_result = [f"🪙{coin}c x {count}" if coin < 100 else f"🪙${str(round(coin * 0.01))} x {count}" for coin, count in counts.items()]
+            result_label.set_text(f"Result using {len(result)} coins: \n{'\n'.join(counted_result)}")
         else:
             result_label.set_text("No combinations found within limit")
     else:
@@ -99,7 +99,7 @@ def process_action():
 
 # UI
 with ui.card().classes('rounded-2xl shadow-xl'):
-    ui.label('Too Many Coins').classes('text-2xl font-bold mb-4')
+    ui.label('💰 Too Many Coins').classes('text-2xl font-bold mb-4')
     with ui.row():
         for coin in wallet.keys():
             label = f"{coin}c" if coin < 100 else f"${round(coin * 0.01)}"
@@ -114,7 +114,7 @@ with ui.card().classes('rounded-2xl shadow-xl'):
         ui.button('Reset', on_click=reset_inputs)
     
     rounding_label = ui.label('')
-    result_label = ui.label('').classes('text-lg')
+    result_label = ui.label('').classes('text-lg').style('white-space: pre-wrap')
 
 # Page setup
 ui.page_title('Too Many Coins')
