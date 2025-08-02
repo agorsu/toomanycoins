@@ -1,11 +1,16 @@
 # toomanycoins
-Simple terminal python app that finds exact change using the most coins available
+A coin calculator that helps reduce unwanted change by spending the most coins available.
 
 ## Description
-Enter in the number of coins in your wallet, the price of the item you wish to purchase and it will calculate the best combination which will use the most coins available to make the purchase.
-You can also set a maximum coin number limit to avoid carrying too much change or exceeding vending machine limits.
+Ever ended up in the situation where you are spending with cash to only end up with more unwanted change than you started with? (Not really as everything is tap and go)... I hear you say
+Well for those of you, that for whatever reason, still prefer cash... this app can help with reducing the burden of unwanted change.
 
-Currently only AUD denomination is available.
+Just enter in the number of coins in your wallet, the price of the item you wish to purchase and toomanycoins will calculate the optimal combination to use up the most coins available to make the purchase.
+
+Not every purchase will end up exact. In this scenario, toomanycoins will round up the price and let you know.
+You can also set a maximum coin number limit to avoid carrying embarassing amounts of change or exceeding vending machine limits.
+
+Toomanycoins currently works only in AUD currency.
 
 ## Getting Started
 
@@ -19,7 +24,7 @@ Firstly download or clone this repo and then install the requirements;
 `cd toomanycoins`
 
 3. Run python
-`python aud_change.py`
+`python toomanycoins.py`
 
 
 Give it a star :tada:
