@@ -14,6 +14,9 @@ Toomanycoins currently works only in AUD currency.
 
 ## Getting Started
 
+### Dependencies
+* nicegui 2.21.1
+
 ## How to setup
 Firstly download or clone this repo and then install the requirements;
 
