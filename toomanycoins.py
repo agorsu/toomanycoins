@@ -4,7 +4,6 @@ from collections import Counter
 # Coin calculator AUD - NiceGUI
 
 # variables
-coin_limit = 20
 total_balance = 0
 wallet = {
     5: 0,
@@ -37,7 +36,7 @@ def find_combinations(nums, target):
     current_combination = []
 
     def backtrack(start, target):
-        if target == 0 and len(list(current_combination)) <= coin_limit:
+        if target == 0 and len(list(current_combination)) <= coin_limit.value:
             results.append(list(current_combination))
             return
         
@@ -107,7 +106,10 @@ with ui.card().classes('rounded-2xl shadow-xl'):
             wallet[coin] = number_input
 
     total_label = ui.label('Total Balance: $0.00').classes('text-lg mt-4')
-    target_value = ui.number(label='Target cost: $', precision=2, min=0)
+    
+    with ui.row():
+        target_value = ui.number(label='Target cost: $', precision=2, min=0)
+        coin_limit = ui.select([10, 20, 30, 50, 100], value=20, label='Coin Limit').classes('w-32 ml-2')
     
     with ui.row():
         ui.button('Calculate', on_click=process_action)
