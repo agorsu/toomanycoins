@@ -10,8 +10,6 @@ Just enter in the number of coins in your wallet, the price of the item you wish
 Not every purchase will end up exact. In this scenario, toomanycoins will round up the price and let you know.
 You can also set a maximum coin number limit to avoid carrying embarassing amounts of change or exceeding vending machine limits.
 
-Toomanycoins currently works only in AUD currency.
-
 ## Getting Started
 
 ### Dependencies
